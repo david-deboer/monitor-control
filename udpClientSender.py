@@ -86,20 +86,11 @@ class UdpClient():
         # Set delay before receiving more data
         time.sleep(2)
 
-    def psu(self, arduinoAddress, command):
+    def snapRelay(self, command, arduinoAddress):
         
         # define arduino socket to send requests
         arduinoSocket = (arduinoAddress, PORT)
-        self.client_socket.sendto('PSU_%s'%command, arduinoSocket)
-
-        # Set delay before receiving more data
-        time.sleep(2)
-
-    def whiteRabbit(self, command):
-        
-        # define arduino socket to send requests
-        arduinoSocket = (arduinoAddress, PORT)
-        self.client_socket.sendto('wr_%s'%command, arduinoSocket)
+        self.client_socket.sendto('snapRelay_%s'%command, arduinoSocket)
 
         # Set delay before receiving more data
         time.sleep(2)
