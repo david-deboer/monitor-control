@@ -148,6 +148,7 @@ void setup() {
   
   // Find Digital IO card and initialize its pin modes 
   if (io.begin(SX1509_ADDRESS)) {
+      Serial.println("Digital IO card found!");
       io.pinMode(0,INPUT);   // Serial
       io.pinMode(1,INPUT);   //   .
       io.pinMode(2,INPUT);   //   .
@@ -170,7 +171,9 @@ void setup() {
       }
       EEPROM.write(eeSerialAdr, sensorArray.serial);
   }
-  Serial.println("Digital io card not found"); 
+  else {
+    Serial.println("Digital io card not found"); 
+  }
 
   
   // Read MAC address from EEPROM (burned previously with MACburner.bin sketch)
