@@ -144,8 +144,7 @@ void setup() {
   digitalWrite(4, HIGH);
   pinMode(4, OUTPUT); 
   digitalWrite(4, HIGH);
-
-  
+ 
   // Find Digital IO card and initialize its pin modes 
   if (io.begin(SX1509_ADDRESS)) {
       Serial.println("Digital IO card found!");
@@ -253,9 +252,10 @@ void loop() {
 
 
     // If none of the sensors are operating, shut down the powersupply to snaps, FEM and PAM.:
-    if (!mcpMid.begin(TEMP_MID) & !mcpTop.begin(TEMP_TOP) & !htu.begin()){
-      shutdownall();
-    }
+    //if (!mcpMid.begin(TEMP_MID) & !mcpTop.begin(TEMP_TOP) & !htu.begin()){
+     // shutdownall();
+      //bootReset();
+    //}
 //    // Wind Sensor
 //    TMP_Therm_ADunits = analogRead(analogPinForTMP);
 //    RV_Wind_ADunits = analogRead(analogPinForRV);
@@ -516,7 +516,7 @@ void shutdownall(){
   // When shutdown function is called, it turns off all 
   // controllable power supplies and precedes to bootloader
   // reset 
-  bootReset();
+  //bootReset();
 
 }
 
