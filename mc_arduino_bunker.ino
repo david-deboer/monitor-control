@@ -103,21 +103,23 @@ void setup() {
 
   Watchdog.disable(); // Disable Watchdog so it doesn't get into infinite reset loop
   
-  // Initialize Serial for error message output and debugging
+  // Initialize Serial port
   Serial.begin(57600);
   Serial.println("Running Setup..");
   
 
-  // Setting pins appropriately. Very important to first deactivate the digital pins (either HIGH or LOW; except PSU since we want to turn the White Rabbit on for networking)
+  // Setting pins appropriately. Very important to first deactivate the digital pins
   // because setting the pin as OUTPUT changes it's state and has caused problems with the reset pin 4 before
-  // Turn White Rabbit 5V on to get on the network: Active HIGH
-  digitalWrite(2, HIGH);
+  // PSU that turns on White Rabbit is now hard wired to be turned on by the 5V Arduino signal, this prevents 
+  // indefinite power cycle in case of a reset loop (which happens when ping/poke fail, the reset command was sent 
+  // or all four sensors are off line.
+
+  // Initialize and deactivate pins to avoid glitches
+  // 8 way SNAP relay
+  digitalWrite(2, LOW);
   pinMode(2, OUTPUT);
-  digitalWrite(2, HIGH);
-  Serial.println("2nd PSU to Power White Rabbit and Relay is on, delaying 12 seconds...");
-  delay(12000);  
- 
-  // Deactivate and Initialize pins to avoid glitches
+  digitalWrite(2, LOW);
+   
   // FEM VAC pin: Active HIGH
   digitalWrite(5, LOW);
   pinMode(5, OUTPUT);
@@ -313,15 +315,15 @@ void loop() {
       String command(packetBuffer); //Convert char array packetBuffer into a string called command
       
       if (command == "poke") {
-          Serial.println("I've been poked");
+          Serial.println("I've been poked!");
           pokeTime = millis();  
       }
       
-      else if (command == "PSU_on") {
+      else if (command == "snapRelay_on") {
         digitalWrite(2, HIGH);
       }     
       
-      else if (command == "PSU_off") {
+      else if (command == "snapRelay_off") {
         digitalWrite(2, LOW);
       }
       
@@ -383,11 +385,13 @@ void loop() {
     // stroke the watchdog just in case
     Watchdog.reset();
    
-  
+    // Check the time elapsed since the last poke 
+    // signal from the server. Reset bootloader 
+    // in attempt to reestablish connection. 
     if ((millis()-pokeTime) > 10000){
-      Serial.println("Haven't received a server poke in");
+      Serial.println("Haven't received a server poke in ");
       Serial.print(millis()-pokeTime);
-      Serial.println("Resseting bootloader");
+      Serial.println("Resseting bootloader..");
       delay(200);
       bootReset();
     }  
@@ -418,6 +422,16 @@ void startall(){
   
   // Turn FEM on
   digitalWrite(5, HIGH);
+  delay(5000);
+  Watchdog.reset();
+  delay(5000);
+  Watchdog.reset();
+  delay(5000);
+  Watchdog.reset();
+
+  // Turn 8 way snap relay on
+  Serial.println("SNAP relay on");
+  digitalWrite(2, HIGH);
   delay(5000);
   Watchdog.reset();
   delay(5000);
@@ -487,24 +501,19 @@ void shutdownall(){
   delay(5000);
   Watchdog.reset();
 
-  // Sample code to wait prevent indefinite reset loop, seems like might
-  // get in trouble if network connection is lost
-  //packetSize = UdpRcv.parsePacket(); //Reads the packet size
-  // Wait indefinitely for a command too be sent, escape from the 
-  //while (!packetSize){
-  //  ;;
-  //}
-
-//  // Don't turn PSU you off since that will prevent
-//  // the ability to talk to Arduino (PSU powers the White Rabbit)
-//  // Turn off PSU; inactive LOW
-//  digitalWrite(2, LOW);
-//  delay(5000);
-//  Watchdog.reset();
-//  delay(5000);   
-//  Watchdog.reset();
-//  delay(5000);
-//  Watchdog.reset();
+  // Turn off 8 way snap relay; inactive LOW
+  digitalWrite(2, LOW);
+  delay(5000);
+  Watchdog.reset();
+  delay(5000);
+  Watchdog.reset();
+  delay(5000);
+  Watchdog.reset();
+   
+  // When shutdown function is called, it turns off all 
+  // controllable power supplies and precedes to bootloader
+  // reset 
+  bootReset();
 
 }
 
