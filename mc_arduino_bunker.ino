@@ -198,6 +198,7 @@ void setup() {
   // Start Ethernet connection, automatically tries to get IP using DHCP
   if (Ethernet.begin(mac) == 0) {
     Serial.println("Failed to configure Ethernet using DHCP, restarting sketch...");
+    // Delay so the watchdog timer resets in case ethernet setup fails
     delay(10000);
   }
   Serial.println("Configured IP:");
@@ -219,19 +220,16 @@ void loop() {
     // Find top temp sensor and read its value
     if (mcpTop.begin(TEMP_TOP)) {
       sensorArray.mcpTempTop = mcpTop.readTempC();
-      delay(2000);
       Watchdog.reset();
     }
     else {
       Serial.println("MCP9808 TOP not found");
     }
-    Watchdog.reset();
 
     
     // Find middle temp sensor and take read value
     if (mcpMid.begin(TEMP_MID)) {
       sensorArray.mcpTempMid = mcpMid.readTempC();
-      delay(2000);
       Watchdog.reset();
     }
     else {

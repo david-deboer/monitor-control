@@ -102,6 +102,12 @@ class UdpClient():
             #unpacked_windspeed_mph = struct.unpack('=f', data[20:24])
             #unpacked_tempCairflow = struct.unpack('=f', data[24:28])
             unpacked_serial = struct.unpack('=B',data[20])
+            unpacked_snap_relay = struct.unpack('=?',data[21])
+            unpacked_fem = struct.unpack('=?',data[22])
+            unpacked_pam = struct.unpack('=?',data[23])
+            unpacked_snapv2_0_1 = struct.unpack('=?',data[24])
+            unpacked_snapv2_2_3 = struct.unpack('=?',data[25])
+
             node = int(unpacked_nodeID[0])
 
             # if (unpacked_mcptemp_top > 27 && unpacked_mcptemp_mid > 27 && unpacked_htutemp > 27):
@@ -115,7 +121,11 @@ class UdpClient():
             #self.r.hmset('status:node:%d'%node, {'tempCairflow':unpacked_tempCairflow[0]})
             
             # Set timestamp 
-            self.r.hmset('status:node:%d'%node, {'timestamp':str(datetime.datetime.now())})
-            self.r.hmset('status:node:%d'%node, {'serial': bin(unpacked_serial[0])})
+            self.r.hmset('status:node:%d'%node, {'timestamp':datetime.strftime(datetime.datetime.now())})
+            self.r.hmset('status:node:%d'%node, {'snap_relay': bin(unpacked_snap_relay[0])})
+            self.r.hmset('status:node:%d'%node, {'fem': bin(unpacked_fem[0])})
+            self.r.hmset('status:node:%d'%node, {'pam': bin(unpacked_pam[0])})
+            self.r.hmset('status:node:%d'%node, {'snapv2_0_1': bin(unpacked_snapv2_0_1[0])})
+            self.r.hmset('status:node:%d'%node, {'snapv2_2_3': bin(unpacked_snapv2_2_3[0])})
             print('status:node:%d'%node,self.r.hgetall('status:node:%d'%node))
 
