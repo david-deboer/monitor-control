@@ -121,7 +121,7 @@ class UdpClient():
             #self.r.hmset('status:node:%d'%node, {'tempCairflow':unpacked_tempCairflow[0]})
             
             # Set timestamp 
-            self.r.hmset('status:node:%d'%node, {'timestamp':datetime.strftime(datetime.datetime.now())})
+            self.r.hmset('status:node:%d'%node, {'timestamp':datetime.datetime.now()})
             self.r.hmset('status:node:%d'%node, {'snap_relay': bin(unpacked_snap_relay[0])})
             self.r.hmset('status:node:%d'%node, {'fem': bin(unpacked_fem[0])})
             self.r.hmset('status:node:%d'%node, {'pam': bin(unpacked_pam[0])})
