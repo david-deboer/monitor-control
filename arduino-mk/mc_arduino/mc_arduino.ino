@@ -189,10 +189,14 @@ void setup() {
   UdpSer.begin(serPort);
   delay(1500); // delay to give time for initialization
 
+  // Now that UDP is initialized, serialUdp can be used
+  serialUdp("Running Setup..."); 
+ 
 
   // Read node ID from EEPROM (burned with MACburner.bin sketch) and assign it to struct nodeID member
   sensorArray.nodeID = EEPROM.read(eeNodeAdr);
   Serial.print("EEPROM contents:");
+  serialUdp("EEPROM contents:");
   for (int i = 0; i < 8; i++) {
     Serial.print("Address: ");
     Serial.print(i);
