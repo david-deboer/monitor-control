@@ -2,10 +2,10 @@ import matplotlib.pyplot as plt
 import numpy as np
 import datetime
 
-f = open("dataset091517.txt")
+f = open("dataset091817.txt")
 dataList = f.readlines()
 
-with open("dataset091517.txt") as f:
+with open("dataset091817.txt") as f:
     dataListStp = [word.strip() for word in f]
 
 
