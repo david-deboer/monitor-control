@@ -115,17 +115,15 @@ class UdpClient():
             # Set hashes in Redis composed of sensor temperature values
             self.r.hmset('status:node:%d'%node, {'tempTop':unpacked_mcptemp_top[0]})
             self.r.hmset('status:node:%d'%node, {'tempMid':unpacked_mcptemp_mid[0]})
-            self.r.hmset('status:node:%d'%node, {'humidTemp':unpacked_htutemp[0]})
+            self.r.hmset('status:node:%d'%node, {'tempHumid':unpacked_htutemp[0]})
             self.r.hmset('status:node:%d'%node, {'humid':unpacked_htuhumid[0]})
-            #self.r.hmset('status:node:%d'%node, {'windSpeed_mph':unpacked_windspeed_mph[0]})
-            #self.r.hmset('status:node:%d'%node, {'tempCairflow':unpacked_tempCairflow[0]})
             
             # Set timestamp 
             self.r.hmset('status:node:%d'%node, {'timestamp':datetime.datetime.now()})
-            self.r.hmset('status:node:%d'%node, {'snap_relay': bin(unpacked_snap_relay[0])})
-            self.r.hmset('status:node:%d'%node, {'fem': bin(unpacked_fem[0])})
-            self.r.hmset('status:node:%d'%node, {'pam': bin(unpacked_pam[0])})
-            self.r.hmset('status:node:%d'%node, {'snapv2_0_1': bin(unpacked_snapv2_0_1[0])})
-            self.r.hmset('status:node:%d'%node, {'snapv2_2_3': bin(unpacked_snapv2_2_3[0])})
+            self.r.hmset('status:node:%d'%node, {'power_snap_relay': bin(unpacked_snap_relay[0])})
+            self.r.hmset('status:node:%d'%node, {'power_fem': bin(unpacked_fem[0])})
+            self.r.hmset('status:node:%d'%node, {'power_pam': bin(unpacked_pam[0])})
+            self.r.hmset('status:node:%d'%node, {'power_snapv2_0_1': bin(unpacked_snapv2_0_1[0])})
+            self.r.hmset('status:node:%d'%node, {'power_snapv2_2_3': bin(unpacked_snapv2_2_3[0])})
             print('status:node:%d'%node,self.r.hgetall('status:node:%d'%node))
 
