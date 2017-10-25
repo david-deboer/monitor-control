@@ -341,6 +341,30 @@ void parseUdpPacket(){
         sensorArray.snap_relay = false;
       }
       
+      else if (command == "snapv2_0_1_on"){
+        Serial.println("snapv2_0_1 on");
+        digitalWrite(SNAPv2_0_1, LOW);
+        sensorArray.snapv2_0_1 = true;
+        }
+
+      else if (command == "snapv2_0_1_off"){
+        Serial.println("snapv2_0_1 off");
+        digitalWrite(SNAPv2_0_1, HIGH);
+        sensorArray.snapv2_0_1 = false;
+        }
+
+      else if (command == "snapv2_2_3_on"){
+        Serial.println("snapv2_2_3 on");
+        digitalWrite(SNAPv2_2_3, LOW);
+        sensorArray.snapv2_2_3 = true;
+        }
+
+      else if (command == "snapv2_2_3_off"){
+        Serial.println("snapv2_2_3 off");
+        digitalWrite(SNAPv2_2_3, HIGH);
+        sensorArray.snapv2_2_3 = false;
+        }
+
       else if (command == "FEM_on") {
         digitalWrite(FEM, HIGH);
         sensorArray.fem = true;
@@ -361,28 +385,7 @@ void parseUdpPacket(){
         digitalWrite(PAM, LOW);
         sensorArray.pam = false;
       }
-      
-      else if (command == "snapv2_0_1_on"){
-        Serial.println("snapv2_0_1 on");
-        digitalWrite(SNAPv2_0_1, LOW);
-        sensorArray.snapv2_0_1 = true;
-        }
-      else if (command == "snapv2_0_1_off"){
-        Serial.println("snapv2_0_1 off");
-        digitalWrite(SNAPv2_0_1, HIGH);
-        sensorArray.snapv2_0_1 = false;
-        }
-      else if (command == "snapv2_2_3_on"){
-        Serial.println("snapv2_2_3 on");
-        digitalWrite(SNAPv2_2_3, LOW);
-        sensorArray.snapv2_2_3 = true;
-        }
-      else if (command == "snapv2_2_3_off"){
-        Serial.println("snapv2_2_3 off");
-        digitalWrite(SNAPv2_2_3, HIGH);
-        sensorArray.snapv2_2_3 = false;
-        }
-        
+              
       else if (command == "reset") {
         bootReset();
         }

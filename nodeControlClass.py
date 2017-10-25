@@ -4,9 +4,8 @@
 import redis
 import time
         
-HOST = '10.0.1.224'
 PORT = 6379
-
+serverAddress = '10.1.1.1'
 
 
 class mcNode():
@@ -15,47 +14,57 @@ class mcNode():
             
     # Class object init makes a connection with our 1U server to grap redis database values
     # Redis bind to port 6379 by default
-	self.r = redis.StrictRedis(host = HOST)
+	self.r = redis.StrictRedis(serverAddress)
 
-    # Returns a dict of temperature sensors
+    # Redis key values/status methods
     def getTemp(self,node):
         
         redistime = self.r.hmget("status:node:%d"%node, "timestamp")[0] 
         timestamp = {'timestamp': redistime}
-        tempBot = float((self.r.hmget("status:node:%d"%node,"tempBot"))[0])
         tempMid = float((self.r.hmget("status:node:%d"%node,"tempMid"))[0])
-        temps = {'timestamp':timestamp,'tempBot':tempBot,'tempMid':tempMid}
+        tempTop = float((self.r.hmget("status:node:%d"%node,"tempTop"))[0])
+        temps = {'timestamp':timestamp,'tempTop':tempTop,'tempMid':tempMid}
         return temps
-
 
 
     def getHumid(self,node):
         return self.r.hmget("status:node:%d"%node,"humidities")
 
 
+    # Power Control Methods 
+    
+    def power_snap_relay(self, node, command):
+        self.r.hset("status:node:%d"%node,"power_snap_relay_ctrl",True)
+        self.r.hset("status:node:%d"%node,"power_snap_relay_cmd",command)
+        print("Snap relay power is %s"%command)
 
 
-    def getAir(self,node):
-        return self.r.hmget("status:node:%d"%node,"airflow")
+    def power_snapv2_0_1(self, node, command):
+        self.r.hset("status:node:%d"%node,"power_snapv2_0_1_ctrl",True)
+        self.r.hset("status:node:%d"%node,"power_snapv2_0_1_cmd",command)
+        print("SNAPv2_0_1 power is %s"%command)
 
 
+    def power_snapv2_2_3(self, node, command):
+        self.r.hset("status:node:%d"%node,"power_snapv2_2_3_ctrl",True)
+        self.r.hset("status:node:%d"%node,"power_snapv2_2_3_cmd",command)
+        print("SNAPv2_2_3 power is %s"%command)
 
 
-#    def getTempDebug(self,node):
-#        # Set getTemps hash field to True. 
-#        self.r.hset("status:node:%d"%node,"getTemps",True)
-#        time.sleep(5)
-#        tempBotDebug = float(self.r.hmget("status:node:%d"%node, "tempBot")[0])
-#        tempMidDebug = float(self.r.hmget("status:node:%d"%node, "tempMidDebug")[0])
-#        timestampDebug = self.r.hmget("status:node:%d"%node, "timestampDebug")[0]
-#                
-#        # Return a dictionary of float values and string timestamp
-#        tempsDebug = {'timestamp':timestampDebug,'tempBotDebug':tempBotDebug, 'tempMidDebug':tempMidDebug}
-#        return tempsDebug
-#
-#    def reset(self,node):
-#        self.r.hset("status:node:%d"%node,"reset",True)
-#        print("Set reset flag to True")
-#        return 
-#    #def accumulate(self):
-	# accumulates specified number of data or for specified period of time, saves to a file, maybe a plot script. Would be cool if I had a real time data upload to a server with cool graphix. 
+    def power_fem(self, node, command):
+        self.r.hset("status:node:%d"%node,"power_fem_ctrl",True)
+        self.r.hset("status:node:%d"%node,"power_fem_cmd",command)
+        print("FEM power is %s"%command)
+
+
+    def power_pam(self, node, command):
+        self.r.hset("status:node:%d"%node,"power_pam_ctrl",True)
+        self.r.hset("status:node:%d"%node,"power_pam_cmd",command)
+        print("PAM power is %s"%command)
+
+
+    def reset(self,node):
+        self.r.hset("status:node:%d"%node,"reset",True)
+        print("Set reset flag to True")
+         
+

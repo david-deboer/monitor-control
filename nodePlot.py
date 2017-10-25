@@ -1,6 +1,8 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import datetime
+import csv
+
 
 f = open("dataset101117.txt")
 dataList = f.readlines()
@@ -18,11 +20,18 @@ for i,val in enumerate(tempTop):
     val = float(val)
 
 
-
+emptyArray=[]
 timeStamp = [datetime.datetime.strptime(elem, '%Y-%m-%d %H:%M:%S.%f') for elem in timeStamp]
 for i,val in enumerate(timeStamp):
     timeStamp[i]=val+datetime.timedelta(hours=9)
 
+with open("plotlyData.csv","wb") as f:
+    writer = csv.writer(f)
+    writer.writerow(emptyArray)
+    writer.writerow(timeStamp)
+    writer.writerow(tempTop)
+    writer.writerow(tempMid)
+    writer.writerow(humidTemp)
 
 print(timeStamp)
 
