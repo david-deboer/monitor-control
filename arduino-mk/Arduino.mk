@@ -253,7 +253,7 @@ else
 endif
 
 # include Common.mk now we know where it is
-include $(ARDMK_DIR)/Common.mk
+#include $(ARDMK_DIR)/Common.mk
 
 # show_config_variable macro is available now. So let's print config details for ARDMK_DIR
 ifndef ARDMK_DIR_MSG
