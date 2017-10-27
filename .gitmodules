@@ -1,0 +1,6 @@
+[submodule "arduino-mk/libraries/Adafruit_MCP9808_Library"]
+	path = arduino-mk/libraries/Adafruit_MCP9808_Library
+	url = https://github.com/adafruit/Adafruit_MCP9808_Library.git
+[submodule "arduino-mk/libraries/Adafruit_HTU21DF_Library"]
+	path = arduino-mk/libraries/Adafruit_HTU21DF_Library
+	url = https://github.com/adafruit/Adafruit_HTU21DF_Library.git
