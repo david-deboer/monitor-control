@@ -78,23 +78,7 @@ Adafruit_MCP9808 mcpMid = Adafruit_MCP9808();
 Adafruit_HTU21DF htu = Adafruit_HTU21DF();
 
 
-// Wind Sensor
-//#define analogPinForRV    1   // change to pins you the analog pins are using
-//#define analogPinForTMP   0
-
-// to calibrate your sensor, put a glass over it, but the sensor should not be
-// touching the desktop surface however.
-// adjust the zeroWindAdjustment until your sensor reads about zero with the glass over it. 
-
-//const float zeroWindAdjustment =  .08; // negative numbers yield smaller wind speeds and vice versa.
-
-//int TMP_Therm_ADunits;  //temp termistor value from wind sensor
-//float RV_Wind_ADunits;    //RV output from wind sensor 
-//float RV_Wind_Volts;
-//int TempCtimes100;
-//float zeroWind_ADunits;
-//float zeroWind_volts;
-
+float cpu_uptime_init;
 
 // struct for a UDP packet
 struct sensors {
@@ -109,6 +93,7 @@ struct sensors {
   bool pam = false;
   bool snapv2_0_1 = false;
   bool snapv2_2_3 = false;
+  float cpu_uptime = 0;
 } sensorArray;
 
 void bootReset();
@@ -118,6 +103,7 @@ void parseUdpPacket();
 void setup() {
   Watchdog.enable(8000);
   unsigned int startSetup = millis();
+  cpu_uptime_init = millis();
   
  //Watchdog.disable(); // Disable Watchdog so it doesn't get into infinite reset loop
   
@@ -282,8 +268,10 @@ void loop() {
       Serial.println("HTU21DF not found!");
       serialUdp("HTU21DF not found!");
     }
- 
-
+    
+    // Calculate the cpu uptime since the last Setup in seconds.
+    sensorArray.cpu_uptime = (millis() - cpu_uptime_init)/1000;
+    
     // Send UDP packet to the server ip address serverIp that's listening on port sndPort
     UdpSnd.beginPacket(serverIp, sndPort); // Initialize the packet send
     UdpSnd.write((byte *)&sensorArray, sizeof sensorArray); // Send the struct as UDP packet
