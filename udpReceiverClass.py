@@ -124,7 +124,7 @@ class UdpClient():
             self.r.hmset('status:node:%d'%node, {'power_pam': bin(unpacked_pam[0])})
             self.r.hmset('status:node:%d'%node, {'power_snapv2_0_1': bin(unpacked_snapv2_0_1[0])})
             self.r.hmset('status:node:%d'%node, {'power_snapv2_2_3': bin(unpacked_snapv2_2_3[0])})
-            self.r.hmset('status:node:%d'%node, {'cpu_uptime': bin(unpacked_cpu_uptime[0])})
+            self.r.hmset('status:node:%d'%node, {'cpu_uptime': unpacked_cpu_uptime[0]})
 
 
             # Check if Redis flags were set through the nodeControlClass

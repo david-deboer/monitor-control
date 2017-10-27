@@ -8,7 +8,7 @@ PORT = 6379
 serverAddress = '10.1.1.1'
 
 
-class mcNode():
+class NodeControl():
     def __init__(self):
             
             
