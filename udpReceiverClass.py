@@ -63,7 +63,7 @@ class UdpClient():
 
         print('Poking..')
         self.client_socket.sendto('poke',self.arduinoSocket) 
-        t = threading.Timer(5,self.__poke)
+        t = threading.Timer(3,self.__poke)
         print("Timer Set.")
         t.daemon = True
         t.start()
@@ -99,14 +99,13 @@ class UdpClient():
             unpacked_mcptemp_mid = struct.unpack('=f',data[8:12])
             unpacked_htutemp = struct.unpack('=f', data[12:16])
             unpacked_htuhumid = struct.unpack('=f', data[16:20])
-            #unpacked_windspeed_mph = struct.unpack('=f', data[20:24])
-            #unpacked_tempCairflow = struct.unpack('=f', data[24:28])
             unpacked_serial = struct.unpack('=B',data[20])
             unpacked_snap_relay = struct.unpack('=?',data[21])
             unpacked_fem = struct.unpack('=?',data[22])
             unpacked_pam = struct.unpack('=?',data[23])
             unpacked_snapv2_0_1 = struct.unpack('=?',data[24])
             unpacked_snapv2_2_3 = struct.unpack('=?',data[25])
+            unpacked_cpu_uptime = struct.unpack('=f',data[26:30])
 
             node = int(unpacked_nodeID[0])
 
@@ -125,39 +124,40 @@ class UdpClient():
             self.r.hmset('status:node:%d'%node, {'power_pam': bin(unpacked_pam[0])})
             self.r.hmset('status:node:%d'%node, {'power_snapv2_0_1': bin(unpacked_snapv2_0_1[0])})
             self.r.hmset('status:node:%d'%node, {'power_snapv2_2_3': bin(unpacked_snapv2_2_3[0])})
+            self.r.hmset('status:node:%d'%node, {'cpu_uptime': bin(unpacked_cpu_uptime[0])})
 
 
             # Check if Redis flags were set through the nodeControlClass
 
-            if ((self.r.hmget('status:node:%d'%node, 'power_snap_relay_ctrl')[0]) == "True"):
+            if ((self.r.hmget('status:node:%d'%node, 'power_snap_relay_ctrl')[0]) == 'True'):
                 if ((self.r.hmget('status:node:%d'%node, 'power_snap_relay_cmd')[0]) == 'on'):
                     self.client_socket.sendto("snapRelay_on",self.arduinoSocket) 
                 else: 
                     self.client_socket.sendto('snapRelay_off',self.arduinoSocket) 
                 self.r.hmset('status:node:%d'%node, {'power_snap_relay_ctrl': False})
             
-            if ((self.r.hmget('status:node:%d'%node, 'power_snapv2_0_1_ctrl')[0]) == "True"):
+            if ((self.r.hmget('status:node:%d'%node, 'power_snapv2_0_1_ctrl')[0]) == 'True'):
                 if (self.r.hmget('status:node:%d'%node, 'power_snapv2_0_1_cmd')[0] == 'on'):
                     self.client_socket.sendto('snapv2_0_1_on',self.arduinoSocket) 
                 else:
                     self.client_socket.sendto('snapv2_0_1_off',self.arduinoSocket) 
                 self.r.hset('status:node:%d'%node, 'power_snapv2_0_1_ctrl', False)
 
-            if ((self.r.hmget('status:node:%d'%node, 'power_snapv2_2_3_ctrl')[0]) == "True"):
+            if ((self.r.hmget('status:node:%d'%node, 'power_snapv2_2_3_ctrl')[0]) == 'True'):
                 if (self.r.hmget('status:node:%d'%node, 'power_snapv2_2_3_cmd')[0] == 'on'):
                     self.client_socket.sendto('snapv2_2_3_on',self.arduinoSocket)
                 else:
                     self.client_socket.sendto('snapv2_2_3_off',self.arduinoSocket)
                 self.r.hset('status:node:%d'%node, 'power_snapv2_2_3_ctrl', False)
 
-            if (self.r.hmget('status:node:%d'%node, 'power_fem_ctrl')[0] == "True"):
+            if (self.r.hmget('status:node:%d'%node, 'power_fem_ctrl')[0] == 'True'):
                 if (self.r.hmget('status:node:%d'%node, 'power_fem_cmd')[0] == 'on'):
                     self.client_socket.sendto('FEM_on',self.arduinoSocket) 
                 else:
                     self.client_socket.sendto('FEM_off',self.arduinoSocket) 
                 self.r.hset('status:node:%d'%node, 'power_fem_ctrl', False)
 
-            if (self.r.hmget('status:node:%d'%node, 'power_pam_ctrl')[0] == "True"):
+            if (self.r.hmget('status:node:%d'%node, 'power_pam_ctrl')[0] == 'True'):
                 if (self.r.hmget('status:node:%d'%node, 'power_pam_cmd')[0] == 'on'):
                     self.client_socket.sendto('PAM_on',self.arduinoSocket) 
                 else:
