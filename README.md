@@ -2,11 +2,11 @@
 To clone the sensor libraries together with code use 'git clone --recursive https://github.com/reeveress/monitor-control.git'
 
 *Usage*
-import the nodeControlClass into ipython
-instantiate a nodeControl class object:
-n = nodeControlClass.NodeControl()
-Check out the available functions via n.[tab]
-you'll see something like this:
+import the nodeControlClass into ipython 
+instantiate a nodeControl class object: 
+n = nodeControlClass.NodeControl() 
+Check out the available functions via n.[tab] 
+you'll see something like this: 
 n.getHumid          n.power_fem         n.power_snap_relay  n.power_snapv2_2_3  n.reset             
 n.getTemp           n.power_pam         n.power_snapv2_0_1  n.r
 
