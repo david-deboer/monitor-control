@@ -17,7 +17,6 @@ n.reset
 n.getTemp           
 n.power_pam         
 n.power_snapv2_0_1 
-n.r
 
 The power methods provide the ability to send power commands to Arduino, through the Redis database.
 All power methods take the node number and command as arguments. Node number is a digit from 0-29 and command
