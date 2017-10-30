@@ -9,14 +9,17 @@ To clone the sensor libraries together with code use 'git clone --recursive http
 
 you'll see something like this:
 
-n.getHumid  
-n.power_fem         
-n.power_snap_relay  
+n.getTemp 
+n.getHumid             
+n.power_snap_relay    
+n.power_snapv2_0_1   
 n.power_snapv2_2_3  
-n.reset             
-n.getTemp           
-n.power_pam         
-n.power_snapv2_0_1 
+n.power_fem 
+n.power_pam  
+n.reset         
+          
+       
+
 
 The power methods provide the ability to send power commands to Arduino, through the Redis database.
 All power methods take the node number and command as arguments. Node number is a digit from 0-29 and command
