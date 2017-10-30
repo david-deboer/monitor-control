@@ -1,4 +1,4 @@
-# monitor-control
+# nodeControlClass usage
 To clone the sensor libraries together with code use 'git clone --recursive https://github.com/reeveress/monitor-control.git'
 
 ### Usage 
@@ -25,10 +25,7 @@ is string with value 'on' or 'off'.
 
 
 
-
-
-
-
+# arduino-mk usage
 ***You must have the Arduino IDE installed on the computer you're using arduino-mk on or it won't work***
 * using arduino-mk to create .bin out of .ino file:
 * go into mc_arduino folder
