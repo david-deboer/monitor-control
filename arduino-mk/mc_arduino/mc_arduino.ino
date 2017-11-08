@@ -1,13 +1,15 @@
+// This script, "sketch", is used to gather sensor data with an Arduino and 
+// send it over the White Rabbit Network to a server inside a HERA container. 
+// On boot, Arduino will request to get an IP address along with a latest
+// sketch stored on the TFTP server in the container. Note that in order
+// to get an IP, the Arduino needs to specify its MAC address - which does
+// come with Arduino off the shelf. The initial bootloader MAC address
+// is hardwired into the arduino-netboot software available in the
+//  
 
-//#include <util.h>
-#include <Adafruit_SleepyDog.h>
-#include <EEPROM.h>
-#include <Ethernet.h>
-//#include <EthernetUdp.h>
-#include <SPI.h>
-#include <Adafruit_MCP9808.h>
-#include <Adafruit_HTU21DF.h>
-#include <SparkFunSX1509.h> // Include SX1509 library
+
+
+
 
 
 //================ EEPROM Memory Map ================= 
@@ -27,6 +29,20 @@
 //      ..             ---- ----       unassigned
 //      ...            ---- ----       unassigned
 //      1024           ---- ----       unassigned
+
+
+
+
+
+#include <Adafruit_SleepyDog.h>
+#include <EEPROM.h>
+#include <Ethernet.h>
+#include <SPI.h>
+#include <Adafruit_MCP9808.h>
+#include <Adafruit_HTU21DF.h>
+#include <SparkFunSX1509.h> // Include SX1509 library
+
+
 
 
 
@@ -94,6 +110,7 @@ struct sensors {
   bool snapv2_0_1 = false;
   bool snapv2_2_3 = false;
   float cpu_uptime = 0;
+  byte mac;
 } sensorArray;
 
 void bootReset();
@@ -157,6 +174,9 @@ void setup() {
     mac[i] = EEPROM.read(eeadr);
     ++eeadr;
     }
+
+ 
+  sensorArray.mac = mac;
 
   // Enable Watchdog for 8 seconds
  // Watchdog.enable(8000);

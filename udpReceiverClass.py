@@ -1,9 +1,3 @@
-"""
-This class is used for receiving the UDP packets from the Arduino.
-
-It goes into an infinite while loop so has only the packet receiving functionality. 
-"""
-
 
 import threading
 import time
@@ -22,7 +16,11 @@ PORT = 8889
 sendPort = 8888
 
 class UdpClient():
+    """
+    This class received UDP packets from Arduino containing sensor data and misc node metadata.
+    Class goes into an infinite loop when receiveUDP method is called.
 
+    """
 
     def __init__(self):
 
@@ -37,7 +35,7 @@ class UdpClient():
         try:
                 self.client_socket= socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
                 # Set these options so multiple processes can connect to this socket
-                # self.client_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+                self.client_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
                 print('Socket created')
         except socket.error, msg:
                 print('Failed to create socket. Error Code : ' + str(msg[0]) + ' Message ' + str(msg[1]))
@@ -74,7 +72,9 @@ class UdpClient():
 
     def receiveUDP(self, arduinoAddress):
         """
-        Goes into an infinite while loop to grab UDP packets.
+        Captures UDP packets sent by Arduino an pushes to Redis. 
+        Sends poke signal to Arduino every 3 seconds.
+        Checks for control flags in Redis database set by the nodeControlClass.
         """
 
         # define socket necessary for sending poke command to Arduino
@@ -106,25 +106,34 @@ class UdpClient():
             unpacked_snapv2_0_1 = struct.unpack('=?',data[24])
             unpacked_snapv2_2_3 = struct.unpack('=?',data[25])
             unpacked_cpu_uptime = struct.unpack('=f',data[26:30])
+            unpacked_mac = struct.unpack('=B',data[30])
 
             node = int(unpacked_nodeID[0])
 
             # if (unpacked_mcptemp_top > 27 && unpacked_mcptemp_mid > 27 && unpacked_htutemp > 27):
                #server.send('heranodemc@gmail.com','recipientemail@gmail.com','The temperature values are approaching critical levels, shutdown sequence initiated') 
             # Set hashes in Redis composed of sensor temperature values
-            self.r.hmset('status:node:%d'%node, {'tempTop':unpacked_mcptemp_top[0]})
-            self.r.hmset('status:node:%d'%node, {'tempMid':unpacked_mcptemp_mid[0]})
-            self.r.hmset('status:node:%d'%node, {'tempHumid':unpacked_htutemp[0]})
-            self.r.hmset('status:node:%d'%node, {'humid':unpacked_htuhumid[0]})
-            
-            # Set timestamp 
-            self.r.hmset('status:node:%d'%node, {'timestamp':datetime.datetime.now()})
-            self.r.hmset('status:node:%d'%node, {'power_snap_relay': bin(unpacked_snap_relay[0])})
-            self.r.hmset('status:node:%d'%node, {'power_fem': bin(unpacked_fem[0])})
-            self.r.hmset('status:node:%d'%node, {'power_pam': bin(unpacked_pam[0])})
-            self.r.hmset('status:node:%d'%node, {'power_snapv2_0_1': bin(unpacked_snapv2_0_1[0])})
-            self.r.hmset('status:node:%d'%node, {'power_snapv2_2_3': bin(unpacked_snapv2_2_3[0])})
-            self.r.hmset('status:node:%d'%node, {'cpu_uptime': unpacked_cpu_uptime[0]})
+
+            self.r.hmset('status:node:%d'%node, {'tempTop':unpacked_mcptemp_top[0],
+            'tempMid':unpacked_mcptemp_mid[0],'tempHumid':unpacked_htutemp[0],
+            'humid':unpacked_htuhumid[0],'power_snap_relay': bin(unpacked_snap_relay[0]),
+            'power_fem': bin(unpacked_fem[0]),'power_pam': bin(unpacked_pam[0]),
+            'power_snapv2_0_1': bin(unpacked_snapv2_0_1[0]),'power_snapv2_2_3': bin(unpacked_snapv2_2_3[0]),
+            'cpu_uptime': unpacked_cpu_uptime[0],'timestamp':datetime.datetime.now()})
+
+#            self.r.hmset('status:node:%d'%node, {'tempTop':unpacked_mcptemp_top[0]})
+#            self.r.hmset('status:node:%d'%node, {'tempMid':unpacked_mcptemp_mid[0]})
+#            self.r.hmset('status:node:%d'%node, {'tempHumid':unpacked_htutemp[0]})
+#            self.r.hmset('status:node:%d'%node, {'humid':unpacked_htuhumid[0]})
+#            
+#            # Set timestamp 
+#            self.r.hmset('status:node:%d'%node, {'timestamp':datetime.datetime.now()})
+#            self.r.hmset('status:node:%d'%node, {'power_snap_relay': bin(unpacked_snap_relay[0])})
+#            self.r.hmset('status:node:%d'%node, {'power_fem': bin(unpacked_fem[0])})
+#            self.r.hmset('status:node:%d'%node, {'power_pam': bin(unpacked_pam[0])})
+#            self.r.hmset('status:node:%d'%node, {'power_snapv2_0_1': bin(unpacked_snapv2_0_1[0])})
+#            self.r.hmset('status:node:%d'%node, {'power_snapv2_2_3': bin(unpacked_snapv2_2_3[0])})
+#            self.r.hmset('status:node:%d'%node, {'cpu_uptime': unpacked_cpu_uptime[0]})
 
 
             # Check if Redis flags were set through the nodeControlClass
