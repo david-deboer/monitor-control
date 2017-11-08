@@ -1,4 +1,4 @@
-# monitor-control
+# nodeControlClass usage
 To clone the sensor libraries together with code use 'git clone --recursive https://github.com/reeveress/monitor-control.git'
 
 ### Usage 
@@ -9,15 +9,17 @@ To clone the sensor libraries together with code use 'git clone --recursive http
 
 you'll see something like this:
 
-n.getHumid  
-n.power_fem         
-n.power_snap_relay  
+n.getTemp 
+n.getHumid             
+n.power_snap_relay    
+n.power_snapv2_0_1   
 n.power_snapv2_2_3  
-n.reset             
-n.getTemp           
-n.power_pam         
-n.power_snapv2_0_1 
-n.r
+n.power_fem 
+n.power_pam  
+n.reset         
+          
+       
+
 
 The power methods provide the ability to send power commands to Arduino, through the Redis database.
 All power methods take the node number and command as arguments. Node number is a digit from 0-29 and command
@@ -25,10 +27,7 @@ is string with value 'on' or 'off'.
 
 
 
-
-
-
-
+# arduino-mk usage
 ***You must have the Arduino IDE installed on the computer you're using arduino-mk on or it won't work***
 * using arduino-mk to create .bin out of .ino file:
 * go into mc_arduino folder
