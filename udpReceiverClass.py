@@ -106,10 +106,10 @@ class UdpClient():
             unpacked_snapv2_0_1 = struct.unpack('=?',data[24])
             unpacked_snapv2_2_3 = struct.unpack('=?',data[25])
             unpacked_cpu_uptime = struct.unpack('=f',data[26:30])
-            unpacked_mac = struct.unpack('=B',data[30])
+            unpacked_mac = struct.unpack('=s',data[30:36])
 
             node = int(unpacked_nodeID[0])
-
+            print('Unpacked mac value is %x'%unpacked_mac) 
             # if (unpacked_mcptemp_top > 27 && unpacked_mcptemp_mid > 27 && unpacked_htutemp > 27):
                #server.send('heranodemc@gmail.com','recipientemail@gmail.com','The temperature values are approaching critical levels, shutdown sequence initiated') 
             # Set hashes in Redis composed of sensor temperature values

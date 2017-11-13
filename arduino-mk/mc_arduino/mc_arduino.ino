@@ -110,7 +110,7 @@ struct sensors {
   bool snapv2_0_1 = false;
   bool snapv2_2_3 = false;
   float cpu_uptime = 0;
-  byte mac;
+  byte mac[6];
 } sensorArray;
 
 void bootReset();
@@ -173,10 +173,12 @@ void setup() {
   for (int i = 0; i < 6; i++){
     mac[i] = EEPROM.read(eeadr);
     ++eeadr;
-    }
+  }
 
+  for (int i=0; i<6; i++){
+      sensorArray.mac[i] = EEPROM.read(i); 
+  }
  
-  sensorArray.mac = mac;
 
   // Enable Watchdog for 8 seconds
  // Watchdog.enable(8000);
