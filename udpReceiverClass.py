@@ -15,6 +15,9 @@ serverAddress = '10.1.1.1'
 PORT = 8889
 sendPort = 8888
 
+
+unpacked_mac = []
+
 class UdpClient():
     """
     This class received UDP packets from Arduino containing sensor data and misc node metadata.
@@ -85,7 +88,7 @@ class UdpClient():
 
         # Loop to grap UDP packets from Arduino and push to Redis
         while True:
-            
+             
             
             # Receive data continuously from the server (Arduino in this case)
             data, addr =  self.client_socket.recvfrom(1024)
@@ -99,17 +102,32 @@ class UdpClient():
             unpacked_mcptemp_mid = struct.unpack('=f',data[8:12])
             unpacked_htutemp = struct.unpack('=f', data[12:16])
             unpacked_htuhumid = struct.unpack('=f', data[16:20])
-            unpacked_serial = struct.unpack('=B',data[20])
+            unpacked_serial = struct.unpack('=s',data[20])
             unpacked_snap_relay = struct.unpack('=?',data[21])
             unpacked_fem = struct.unpack('=?',data[22])
             unpacked_pam = struct.unpack('=?',data[23])
             unpacked_snapv2_0_1 = struct.unpack('=?',data[24])
             unpacked_snapv2_2_3 = struct.unpack('=?',data[25])
             unpacked_cpu_uptime = struct.unpack('=f',data[26:30])
-            unpacked_mac = struct.unpack('=s',data[30:36])
+            unpacked_mac.append(struct.unpack('=s',data[30]))
+            unpacked_mac.append(struct.unpack('=s',data[31]))
+            unpacked_mac.append(struct.unpack('=s',data[32]))
+            unpacked_mac.append(struct.unpack('=s',data[33]))
+            unpacked_mac.append(struct.unpack('=s',data[34]))
+            unpacked_mac.append(struct.unpack('=s',data[35]))
+            unpacked_mac.append(struct.unpack('=s',data[36]))
 
             node = int(unpacked_nodeID[0])
-            print('Unpacked mac value is %x'%unpacked_mac) 
+            print('Unpacked mac value is:')
+            print(((unpacked_mac[5])))
+            print(((unpacked_mac[6])))
+            #print(((unpacked_mac[0])))
+            #print(((unpacked_mac[1])))
+            #print(((unpacked_mac[2])))
+            #print(((unpacked_mac[3])))
+            #print(((unpacked_mac[4])))
+            #print(((unpacked_mac[5])))
+             
             # if (unpacked_mcptemp_top > 27 && unpacked_mcptemp_mid > 27 && unpacked_htutemp > 27):
                #server.send('heranodemc@gmail.com','recipientemail@gmail.com','The temperature values are approaching critical levels, shutdown sequence initiated') 
             # Set hashes in Redis composed of sensor temperature values
