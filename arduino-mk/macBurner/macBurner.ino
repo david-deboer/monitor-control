@@ -45,7 +45,7 @@ unsigned int serPort = 8890;  // Assign port to print debug statements
 char packetBuffer[UDP_TX_PACKET_MAX_SIZE];
 String datReq; // String for data
 
-
+void serialUdp(String);
 
 
 void setup() {
@@ -83,7 +83,7 @@ void setup() {
       ;
   }
   serialUdp("IP address:");
-  serialUdp(Ethernet.localIP());
+  serialUdp(String(Ethernet.localIP()));
   
   // Start UDP
   Udp.begin(localPort);
