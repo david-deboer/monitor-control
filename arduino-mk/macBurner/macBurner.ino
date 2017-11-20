@@ -27,7 +27,7 @@ unsigned int nodeID = 2;
 unsigned int eeadr = 0; 
 unsigned int eeNodeAdr = 6; // EEPROM addres that will store node ID number
 
-byte mac[] = {0x00, 0x08, 0xDC, 0x00, 0x00, 0x4F}; //Assign MAC address of the Arduino here
+byte mac[] = {0x00, 0x08, 0xDC, 0x00, 0x00, 0x6A}; //Assign MAC address of the Arduino here
 
 unsigned int localPort = 8888; // Assign a port to talk over
 int packetSize;
