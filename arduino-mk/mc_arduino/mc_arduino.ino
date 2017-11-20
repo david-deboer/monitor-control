@@ -99,10 +99,10 @@ float cpu_uptime_init;
 // struct for a UDP packet
 struct sensors {
   float nodeID;
-  float mcpTempTop;
-  float mcpTempMid;
-  float htuTemp;
-  float htuHumid;
+  float mcpTempTop = -99;
+  float mcpTempMid = -99;
+  float htuTemp = -99;
+  float htuHumid = -99;
   byte serial;
   bool snap_relay = false;
   bool fem = false;
@@ -110,7 +110,7 @@ struct sensors {
   bool snapv2_0_1 = false;
   bool snapv2_2_3 = false;
   float cpu_uptime = 0;
-  byte mac[6];
+  byte mac[7];
 } sensorArray;
 
 void bootReset();
@@ -175,8 +175,8 @@ void setup() {
     ++eeadr;
   }
 
-  for (int i=0; i<6; i++){
-      sensorArray.mac[i] = EEPROM.read(i); 
+  for (int i = 0; i < 6; i++){
+    sensorArray.mac[i] = mac[i]; 
   }
  
 
@@ -199,6 +199,16 @@ void setup() {
 
   // Now that UDP is initialized, serialUdp can be used
   serialUdp("Running Setup..."); 
+  serialUdp("Contents of the sensorArray.mac:");
+  serialUdp(String(mac[6]));
+  serialUdp("Individual values:");
+  serialUdp(String(mac[0]));
+  serialUdp(String(mac[1]));
+  serialUdp(String(mac[2]));
+  serialUdp(String(mac[3]));
+  serialUdp(String(mac[4]));
+  serialUdp(String(mac[5]));
+
  
 
   // Read node ID from EEPROM (burned with MACburner.bin sketch) and assign it to struct nodeID member
@@ -324,6 +334,7 @@ void loop() {
     unsigned int endLoop = millis();
     serialUdp("Loops runs for");
     serialUdp(String(endLoop-startLoop));
+    delay(2000);
 }
 
 
