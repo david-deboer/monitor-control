@@ -22,7 +22,7 @@
 //      1024           ---- ----       unassigned
 
 
-unsigned int nodeID = 2;
+unsigned int nodeID = 0;
 
 unsigned int eeadr = 0; 
 unsigned int eeNodeAdr = 6; // EEPROM addres that will store node ID number
@@ -33,6 +33,13 @@ unsigned int localPort = 8888; // Assign a port to talk over
 int packetSize;
 
 EthernetUDP Udp; // UDP object
+
+IPAddress serverIp(10, 1, 1, 1); // Server ip address
+EthernetUDP UdpSer; // UDP object to print serial debug info
+
+unsigned int serPort = 8890;  // Assign port to print debug statements
+
+
 
 // For future use; initializing buffer and data variables for receiving packets from the server
 char packetBuffer[UDP_TX_PACKET_MAX_SIZE];
@@ -60,25 +67,23 @@ void setup() {
  
   // Print out the contents of EEPROM
   for (int i = 0; i < 8; i++) {
-    Serial.println("Printing the contents of EEPROM");
-    Serial.print("Address: ");
-    Serial.print(i);
-    Serial.print("\t");
+    serialUdp("Printing the contents of EEPROM");
+    serialUdp("Address: ");
+    serialUdp(String(i));
     Serial.print("Data: ");
-    Serial.print(EEPROM.read(i));
-    Serial.print("\t");
+    Serial.print(String(EEPROM.read(i)));
 
   } 
 
   // Start Ethernet connection, automatically tries to get IP using DHCP
   if (Ethernet.begin(mac) == 0) {
 
-    Serial.println("Failed to configure Ethernet using DHCP");
+    serialUdp("Failed to configure Ethernet using DHCP");
     for (;;)
       ;
   }
-  Serial.println("IP address:");
-  Serial.println(Ethernet.localIP());
+  serialUdp("IP address:");
+  serialUdp(Ethernet.localIP());
   
   // Start UDP
   Udp.begin(localPort);
@@ -97,7 +102,7 @@ void setup() {
 void loop() {
    // Check if request was sent to Arduino
     packetSize = Udp.parsePacket(); //Reads the packet size
-    Serial.println("Waiting to receive the reset command..");
+    serialUdp("Waiting to receive the reset command..");
     
     if (packetSize>0) { //if packetSize is >0, that means someone has sent a request
   
@@ -106,7 +111,7 @@ void loop() {
     
       if (datReq == "reset") {
         
-        Serial.println("Resetting the microcontroller...");
+        serialUdp("Resetting the microcontroller...");
         digitalWrite(4, LOW);
       }   
       
@@ -115,4 +120,10 @@ void loop() {
 }
 
 
+void serialUdp(String message){
+  UdpSer.beginPacket(serverIp, serPort);
+  UdpSer.print(message);
+  UdpSer.endPacket();
+  memset(packetBuffer, 0, UDP_TX_PACKET_MAX_SIZE);
+  }
 
