@@ -1,7 +1,3 @@
-#include <EEPROM.h>
-#include <Ethernet.h>
-#include <EthernetUdp.h>
-
 
 //================ EEPROM Memory Map ================= 
 // Address Byte       Data(8 bits)        Type                
@@ -22,36 +18,54 @@
 //      1024           ---- ----       unassigned
 
 
-unsigned int nodeID = 0;
 
+#include <Adafruit_SleepyDog.h>
+#include <EEPROM.h>
+#include <Ethernet.h>
+#include <EthernetUdp.h>
+
+#define RESET 4
+
+
+
+IPAddress serverIp(10, 1, 1, 1); // Server ip address
+EthernetUDP UdpRcv; // UDP object
+EthernetUDP UdpSer; // UDP object to print serial debug info
+
+byte mac[] = {0x00, 0x08, 0xDC, 0x00, 0x00, 0x6A}; //Assign MAC address of the Arduino here
+unsigned int rcvPort = 8888; // Assign a port to talk over
+unsigned int serPort = 8890;  // Assign port to print debug statements
+
+// Initializing buffer and data variables for receiving packets from the server
+int packetSize;
+char packetBuffer[UDP_TX_PACKET_MAX_SIZE];
+String command; // String for data
+
+
+unsigned int nodeID = 0;
 unsigned int eeadr = 0; 
 unsigned int eeNodeAdr = 6; // EEPROM addres that will store node ID number
 
-byte mac[] = {0x00, 0x08, 0xDC, 0x00, 0x00, 0x6A}; //Assign MAC address of the Arduino here
-
-unsigned int localPort = 8888; // Assign a port to talk over
-int packetSize;
-
-EthernetUDP Udp; // UDP object
-
-IPAddress serverIp(10, 1, 1, 1); // Server ip address
-EthernetUDP UdpSer; // UDP object to print serial debug info
-
-unsigned int serPort = 8890;  // Assign port to print debug statements
-
-
-
-// For future use; initializing buffer and data variables for receiving packets from the server
-char packetBuffer[UDP_TX_PACKET_MAX_SIZE];
-String datReq; // String for data
 
 void serialUdp(String);
-
+void parseUdpPacket();
 
 void setup() {
-  Serial.begin(9600);
-  
-  // burn MAC to first 6 EEPROM bytes
+
+  Watchdog.enable(8000);
+  Serial.begin(57600);
+  Serial.println("Running macBurner sketch"); 
+
+  // Setting pins appropriately. Very important to first deactivate the digital pins
+  // because setting the pin as OUTPUT changes it's state and has caused problems with the reset pin 4 before
+
+  // RESET pin; active LOW
+  digitalWrite(RESET, HIGH);
+  pinMode(RESET, OUTPUT);
+  digitalWrite(RESET, HIGH);
+
+
+  // Burn MAC to first 6 EEPROM bytes
   for (int i = 0; i < 6; i++){
     EEPROM.write(eeadr, mac[i]);
     ++eeadr;
@@ -65,16 +79,24 @@ void setup() {
     EEPROM.write(i,0);
   }  
  
+  // Print out the contents of EEPROM
+  Serial.println("EEPROM read prior to Ethernet.begin(mac)");
+  for (int i = 0; i < 8; i++) {
+    Serial.println("Data: ");
+    Serial.println(String(EEPROM.read(i)));
+  } 
+
 
   // Start Ethernet connection, automatically tries to get IP using DHCP
   if (Ethernet.begin(mac) == 0) {
-
     Serial.print("Failed to configure Ethernet using DHCP");
   }
  
+  // Start UDP
   UdpSer.begin(serPort);
-  delay(1500);
-  
+  UdpRcv.begin(rcvPort);
+  delay(1500); // delay to give time for initialization
+
   // Print out the contents of EEPROM
   for (int i = 0; i < 8; i++) {
     serialUdp("Printing the contents of EEPROM");
@@ -82,19 +104,10 @@ void setup() {
     serialUdp(String(i));
     Serial.print("Data: ");
     Serial.print(String(EEPROM.read(i)));
-
   } 
+
   serialUdp("IP address:");
   serialUdp(String(Ethernet.localIP()));
-  
-  // Start UDP
-  Udp.begin(localPort);
-  delay(1500); // delay to give time for initialization
-
-  // Set Pin 4 as the reset pin
-  digitalWrite(4, HIGH);
-  pinMode(4, OUTPUT);
-  digitalWrite(4, HIGH);
 
   
 }
@@ -103,24 +116,23 @@ void setup() {
 
 
 void loop() {
-   // Check if request was sent to Arduino
-    packetSize = Udp.parsePacket(); //Reads the packet size
     serialUdp("Waiting to receive the reset command..");
-    
+   // Check if request was sent to Arduino
+    packetSize = UdpRcv.parsePacket(); // Reads the packet size
+
     if (packetSize>0) { //if packetSize is >0, that means someone has sent a request
-  
-      Udp.read(packetBuffer, UDP_TX_PACKET_MAX_SIZE); //Read the data request
-      String datReq(packetBuffer); //Convert char array packetBuffer into a string called datReq
-    
-      if (datReq == "reset") {
-        
-        serialUdp("Resetting the microcontroller...");
-        digitalWrite(4, LOW);
-      }   
-      
+       parseUdpPacket();
     }
 
+    //clear out the packetBuffer array
+    memset(packetBuffer, 0, UDP_TX_PACKET_MAX_SIZE);
+
+    // Renew DHCP lease - times out eventually if this is removed
+    Ethernet.maintain();
+ 
+
 }
+
 
 
 void serialUdp(String message){
@@ -130,3 +142,24 @@ void serialUdp(String message){
   memset(packetBuffer, 0, UDP_TX_PACKET_MAX_SIZE);
   }
 
+
+
+void parseUdpPacket(){
+  UdpRcv.read(packetBuffer, UDP_TX_PACKET_MAX_SIZE); //Read the data request
+  String command(packetBuffer); //Convert char array packetBuffer into a string called command
+
+  if (packetSize>0) { //if packetSize is >0, that means someone has sent a request
+  
+      UdpRcv.read(packetBuffer, UDP_TX_PACKET_MAX_SIZE); //Read the data request
+      String command(packetBuffer); //Convert char array packetBuffer into a string called command
+    
+      if (command == "reset") {
+        
+          serialUdp("Resetting the microcontroller...");
+          digitalWrite(RESET, LOW);
+      }   
+      
+    }
+
+
+}

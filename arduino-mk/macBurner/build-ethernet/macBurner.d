@@ -10,6 +10,8 @@ build-ethernet/macBurner.o: macBurner.ino \
  /home/zuhraa470/arduino-1.8.4/hardware/arduino/avr/cores/arduino/USBAPI.h \
  /home/zuhraa470/arduino-1.8.4/hardware/arduino/avr/cores/arduino/Arduino.h \
  /home/zuhraa470/arduino-1.8.4/hardware/arduino/avr/variants/ethernet/pins_arduino.h \
+ /home/zuhraa470/monitor-control/arduino-mk/libraries/Adafruit_SleepyDog/Adafruit_SleepyDog.h \
+ /home/zuhraa470/monitor-control/arduino-mk/libraries/Adafruit_SleepyDog/utility/WatchdogAVR.h \
  /home/zuhraa470/monitor-control/arduino-mk/libraries/EEPROM/src/EEPROM.h \
  /home/zuhraa470/monitor-control/arduino-mk/libraries/Ethernet/src/Ethernet.h \
  /home/zuhraa470/arduino-1.8.4/hardware/arduino/avr/cores/arduino/IPAddress.h \
