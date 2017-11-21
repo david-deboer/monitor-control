@@ -51,10 +51,6 @@ void serialUdp(String);
 void setup() {
   Serial.begin(9600);
   
-  // Set Pin 4 as the reset pin
-  digitalWrite(4, HIGH);
-  pinMode(4, OUTPUT);
-  digitalWrite(4, HIGH);
   // burn MAC to first 6 EEPROM bytes
   for (int i = 0; i < 6; i++){
     EEPROM.write(eeadr, mac[i]);
@@ -95,6 +91,10 @@ void setup() {
   Udp.begin(localPort);
   delay(1500); // delay to give time for initialization
 
+  // Set Pin 4 as the reset pin
+  digitalWrite(4, HIGH);
+  pinMode(4, OUTPUT);
+  digitalWrite(4, HIGH);
 
   
 }
