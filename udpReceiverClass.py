@@ -1,4 +1,4 @@
-
+import numpy
 import threading
 import time
 import datetime
@@ -16,7 +16,7 @@ PORT = 8889
 sendPort = 8888
 
 
-unpacked_mac = []
+unpacked_mac = ["" for x in range(7)]
 
 class UdpClient():
     """
@@ -109,49 +109,27 @@ class UdpClient():
             unpacked_snapv2_0_1 = struct.unpack('=?',data[24])
             unpacked_snapv2_2_3 = struct.unpack('=?',data[25])
             unpacked_cpu_uptime = struct.unpack('=f',data[26:30])
-            unpacked_mac.append(struct.unpack('=s',data[30]))
-            unpacked_mac.append(struct.unpack('=s',data[31]))
-            unpacked_mac.append(struct.unpack('=s',data[32]))
-            unpacked_mac.append(struct.unpack('=s',data[33]))
-            unpacked_mac.append(struct.unpack('=s',data[34]))
-            unpacked_mac.append(struct.unpack('=s',data[35]))
-            unpacked_mac.append(struct.unpack('=s',data[36]))
+            unpacked_mac[0]=(struct.unpack('=s',data[30])[0])
+            unpacked_mac[1]=(struct.unpack('=s',data[31])[0])
+            unpacked_mac[2]=(struct.unpack('=s',data[32])[0])
+            unpacked_mac[3]=(struct.unpack('=s',data[33])[0])
+            unpacked_mac[4]=(struct.unpack('=s',data[34])[0])
+            unpacked_mac[5]=(struct.unpack('=s',data[35])[0])
+            unpacked_mac[6]=(struct.unpack('=s',data[36])[0])
+
 
             node = int(unpacked_nodeID[0])
-            print('Unpacked mac value is:')
-            print(((unpacked_mac[5])))
-            print(((unpacked_mac[6])))
-            #print(((unpacked_mac[0])))
-            #print(((unpacked_mac[1])))
-            #print(((unpacked_mac[2])))
-            #print(((unpacked_mac[3])))
-            #print(((unpacked_mac[4])))
-            #print(((unpacked_mac[5])))
              
             # if (unpacked_mcptemp_top > 27 && unpacked_mcptemp_mid > 27 && unpacked_htutemp > 27):
                #server.send('heranodemc@gmail.com','recipientemail@gmail.com','The temperature values are approaching critical levels, shutdown sequence initiated') 
             # Set hashes in Redis composed of sensor temperature values
 
-            self.r.hmset('status:node:%d'%node, {'tempTop':unpacked_mcptemp_top[0],
+            self.r.hmset('status:node:%d'%node, {'mac':unpacked_mac,'tempTop':unpacked_mcptemp_top[0],
             'tempMid':unpacked_mcptemp_mid[0],'tempHumid':unpacked_htutemp[0],
             'humid':unpacked_htuhumid[0],'power_snap_relay': bin(unpacked_snap_relay[0]),
             'power_fem': bin(unpacked_fem[0]),'power_pam': bin(unpacked_pam[0]),
             'power_snapv2_0_1': bin(unpacked_snapv2_0_1[0]),'power_snapv2_2_3': bin(unpacked_snapv2_2_3[0]),
             'cpu_uptime': unpacked_cpu_uptime[0],'timestamp':datetime.datetime.now()})
-
-#            self.r.hmset('status:node:%d'%node, {'tempTop':unpacked_mcptemp_top[0]})
-#            self.r.hmset('status:node:%d'%node, {'tempMid':unpacked_mcptemp_mid[0]})
-#            self.r.hmset('status:node:%d'%node, {'tempHumid':unpacked_htutemp[0]})
-#            self.r.hmset('status:node:%d'%node, {'humid':unpacked_htuhumid[0]})
-#            
-#            # Set timestamp 
-#            self.r.hmset('status:node:%d'%node, {'timestamp':datetime.datetime.now()})
-#            self.r.hmset('status:node:%d'%node, {'power_snap_relay': bin(unpacked_snap_relay[0])})
-#            self.r.hmset('status:node:%d'%node, {'power_fem': bin(unpacked_fem[0])})
-#            self.r.hmset('status:node:%d'%node, {'power_pam': bin(unpacked_pam[0])})
-#            self.r.hmset('status:node:%d'%node, {'power_snapv2_0_1': bin(unpacked_snapv2_0_1[0])})
-#            self.r.hmset('status:node:%d'%node, {'power_snapv2_2_3': bin(unpacked_snapv2_2_3[0])})
-#            self.r.hmset('status:node:%d'%node, {'cpu_uptime': unpacked_cpu_uptime[0]})
 
 
             # Check if Redis flags were set through the nodeControlClass
