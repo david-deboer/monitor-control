@@ -122,14 +122,12 @@ void setup() {
   unsigned int startSetup = millis();
   cpu_uptime_init = millis();
   
- //Watchdog.disable(); // Disable Watchdog so it doesn't get into infinite reset loop
   
   // Initialize Serial port
   Serial.begin(57600);
   Serial.println("Running Setup..");
 
   
-
   // Setting pins appropriately. Very important to first deactivate the digital pins
   // because setting the pin as OUTPUT changes it's state and has caused problems with the reset pin 4 before
   // PSU that turns on White Rabbit is now hard wired to be turned on by the 5V Arduino signal, this prevents 
@@ -168,21 +166,17 @@ void setup() {
   digitalWrite(RESET, HIGH);
  
     
-  
-  // Read MAC address from EEPROM (burned previously with MACburner.bin sketch)
+  // Read MAC address from EEPROM (burned previously with macBurner.bin sketch)
   for (int i = 0; i < 6; i++){
     mac[i] = EEPROM.read(eeadr);
     ++eeadr;
   }
 
+  // Fill up the sensorArray struct's mac variable with the burned MAC address
   for (int i = 0; i < 6; i++){
     sensorArray.mac[i] = mac[i]; 
   }
  
-
-  // Enable Watchdog for 8 seconds
- // Watchdog.enable(8000);
-  
   // Start Ethernet connection, automatically tries to get IP using DHCP
   if (Ethernet.begin(mac) == 0) {
     Serial.println("Failed to configure Ethernet using DHCP, restarting sketch...");
