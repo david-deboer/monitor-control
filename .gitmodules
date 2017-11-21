@@ -13,6 +13,6 @@
 [submodule "arduino-mk/libraries/SparkFun_SX1509_Arduino_Library"]
 	path = arduino-mk/libraries/SparkFun_SX1509_Arduino_Library
 	url = https://github.com/sparkfun/SparkFun_SX1509_Arduino_Library.git
-[submodule "arduino-netboot"]
+[submodule "arduino-netboot-hera"]
 	path = arduino-netboot
 	url = https://github.com/esmil/arduino-netboot.git
