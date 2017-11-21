@@ -65,6 +65,16 @@ void setup() {
     EEPROM.write(i,0);
   }  
  
+
+  // Start Ethernet connection, automatically tries to get IP using DHCP
+  if (Ethernet.begin(mac) == 0) {
+
+    Serial.print("Failed to configure Ethernet using DHCP");
+  }
+ 
+  UdpSer.begin(serPort);
+  delay(1500);
+  
   // Print out the contents of EEPROM
   for (int i = 0; i < 8; i++) {
     serialUdp("Printing the contents of EEPROM");
@@ -74,14 +84,6 @@ void setup() {
     Serial.print(String(EEPROM.read(i)));
 
   } 
-
-  // Start Ethernet connection, automatically tries to get IP using DHCP
-  if (Ethernet.begin(mac) == 0) {
-
-    serialUdp("Failed to configure Ethernet using DHCP");
-    for (;;)
-      ;
-  }
   serialUdp("IP address:");
   serialUdp(String(Ethernet.localIP()));
   
