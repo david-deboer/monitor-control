@@ -16,3 +16,6 @@
 [submodule "arduino-netboot-hera"]
 	path = arduino-netboot
 	url = https://github.com/esmil/arduino-netboot.git
+[submodule "arduino-netboot"]
+	path = arduino-netboot
+	url = https://github.com/esmil/arduino-netboot.git
