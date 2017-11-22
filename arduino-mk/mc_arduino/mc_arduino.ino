@@ -59,6 +59,7 @@
 // I2C addresses for the two MCP9808 temperature sensors
 #define TEMP_TOP 0x1A
 #define TEMP_MID 0x1B
+#define TEMP_BOT 0x18
 
 
 IPAddress serverIp(10, 1, 1, 1); // Server ip address
@@ -91,6 +92,7 @@ SX1509 io;
 // Sensor objects
 Adafruit_MCP9808 mcpTop = Adafruit_MCP9808(); 
 Adafruit_MCP9808 mcpMid = Adafruit_MCP9808(); 
+Adafruit_MCP9808 mcpBot = Adafruit_MCP9808(); 
 Adafruit_HTU21DF htu = Adafruit_HTU21DF();
 
 
@@ -101,6 +103,7 @@ struct sensors {
   float nodeID;
   float mcpTempTop = -99;
   float mcpTempMid = -99;
+  float mcpTempBot = -99;
   float htuTemp = -99;
   float htuHumid = -99;
   byte serial;
@@ -285,6 +288,16 @@ void loop() {
     }
 
     
+    // Find bot temp sensor and read its value
+    if (mcpTop.begin(TEMP_BOT)) {
+      sensorArray.mcpTempBot = mcpBot.readTempC();    
+    }
+    else {
+      Serial.println("MCP9808 BOT not found");
+      serialUdp("MCP9808 BOT not found");
+    }
+
+
     // Read humidity and temperature from HTU21DF sensor
     if (htu.begin()) {
       sensorArray.htuTemp = htu.readTemperature();
