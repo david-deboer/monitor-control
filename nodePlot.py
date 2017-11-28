@@ -22,8 +22,8 @@ for i,val in enumerate(tempTop):
 
 emptyArray=[]
 timeStamp = [datetime.datetime.strptime(elem, '%Y-%m-%d %H:%M:%S.%f') for elem in timeStamp]
-for i,val in enumerate(timeStamp):
-    timeStamp[i]=val+datetime.timedelta(hours=9)
+#for i,val in enumerate(timeStamp):
+#    timeStamp[i]=val+datetime.timedelta(hours=9)
 
 with open("plotlyData.csv","wb") as f:
     writer = csv.writer(f)
